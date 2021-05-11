@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Ling Macker" />
+  <meta name="description" content="PanDownload网页版,百度网盘分享链接在线解析工具" />
+  <meta name="keywords" content="PanDownload,百度网盘,分享链接,下载,不限速" />
+  <link rel="icon" href="https://pandownload.com/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/css/bootstrap.min.css">
+  <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdn.staticfile.org/popper.js/1.12.5/umd/popper.min.js"></script>
+  <script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/js/bootstrap.min.js"></script>
+  <script src="https://cdn.staticfile.org/limonte-sweetalert2/8.11.8/sweetalert2.all.min.js"></script>
+  <style>
+    body {
+      background-image: url("https://pandownload.com/img/baiduwp/bg.png");
+    }
+
+    .logo-img {
+      width: 1.1em;
+      position: relative;
+      top: -3px;
+    }
+  </style>
+  <meta name="referrer" content="never">
+  <link href="https://cdn.staticfile.org/font-awesome/5.8.1/css/all.min.css" rel="stylesheet">
+  <title>文件列表</title>
+  <script>
+    function dl(fs_id, timestamp, sign, randsk, share_id, uk) {
+      var form = $('<form method="post" action="/download" target="_blank"></form>');
+      form.append('<input type="hidden" name="fs_id" value="' + fs_id + '">');
+      form.append('<input type="hidden" name="time" value="' + timestamp + '">');
+      form.append('<input type="hidden" name="sign" value="' + sign + '">');
+      form.append('<input type="hidden" name="randsk" value="' + randsk + '">');
+      form.append('<input type="hidden" name="share_id" value="' + share_id + '">');
+      form.append('<input type="hidden" name="uk" value="' + uk + '">');
+      $(document.body).append(form);
+      form.submit();
+    }
+    function getIconClass(filename) {
+      var filetype = {
+        file_video: ["wmv", "rmvb", "mpeg4", "mpeg2", "flv", "avi", "3gp", "mpga", "qt", "rm", "wmz", "wmd", "wvx", "wmx", "wm", "mpg", "mp4", "mkv", "mpeg", "mov", "asf", "m4v", "m3u8", "swf"],
+        file_audio: ["wma", "wav", "mp3", "aac", "ra", "ram", "mp2", "ogg", "aif", "mpega", "amr", "mid", "midi", "m4a", "flac"],
+        file_image: ["jpg", "jpeg", "gif", "bmp", "png", "jpe", "cur", "svgz", "ico"],
+        file_archive: ["rar", "zip", "7z", "iso"],
+        windows: ["exe"],
+        apple: ["ipa"],
+        android: ["apk"],
+        file_alt: ["txt", "rtf"],
+        file_excel: ["xls", "xlsx"],
+        file_word: ["doc", "docx"],
+        file_powerpoint: ["ppt", "pptx"],
+        file_pdf: ["pdf"],
+      };
+      var point = filename.lastIndexOf(".");
+      var t = filename.substr(point + 1);
+      if (t == "") {
+        return "";
+      }
+      t = t.toLowerCase();
+      for (var icon in filetype) {
+        for (var type in filetype[icon]) {
+          if (t == filetype[icon][type]) {
+            return "fa-" + icon.replace('_', '-');
+          }
+        }
+      }
+      return "";
+    }
+    function goToDir(surl, pwd, randsk, dir) {
+      var $form = $('<form>').attr('method', 'POST');
+      var appendFormItem = function (key, value) {
+        $form.append($('<input>').attr('type', 'hidden').attr('name', key).attr('value', value));
+      };
+
+      appendFormItem('surl', surl);
+      appendFormItem('pwd', pwd);
+      appendFormItem('randsk', randsk);
+      appendFormItem('dir', dir);
+
+      $form.appendTo($('body')).submit();
+    }
+    $(document).ready(function () {
+      $(".fa-file").each(function () {
+        var icon = getIconClass($(this).next().text());
+        if (icon != "") {
+          if (icon == "fa-windows" || icon == "fa-android" || icon == "fa-apple") {
+            $(this).removeClass("far").addClass("fab");
+          }
+          $(this).removeClass("fa-file").addClass(icon);
+        }
+      });
+    });
+  </script>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+    <div class="container">
+      <a class="navbar-brand" href="{{  index_url  }}">
+        <img src="https://pandownload.com/img/baiduwp/logo.png" class="img-fluid rounded logo-img mr-2"
+          alt="LOGO">PanDownload
+      </a>
+      <button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#collpase-bar">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="collpase-bar">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="{{  index_url  }}">主页</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class="container">
+    <ol class="breadcrumb my-4">
+      文件列表 </ol>
+    <div>
+      <ul class="list-group ">
+        {% for file in file_list %}
+        {% if (file.isdir|int) == 1 %}
+        <li class="list-group-item border-muted rounded text-muted py-2">
+          <i class="far fa-folder mr-2"></i>
+          <a href="javascript:void(0)"
+            onclick="goToDir('{{ surl }}', '{{ pwd }}', '{{ randsk }}', '{{ file.path }}')">{{ file.server_filename
+            }}</a>
+          <span class="float-right"></span>
+        </li>
+        {% else %}
+        <li class="list-group-item border-muted rounded text-muted py-2">
+          <i class="far fa-file mr-2"></i>
+          <a href="javascript:void(0)"
+            onclick="dl('{{ file.fs_id }}','{{ timestamp }}','{{ sign }}',' {{ randsk }}','{{ shareid }}','{{ uk }}')">
+            {{ file.server_filename }}</a>
+          {% if (file.size|int) <= 1048576 %} <span class="float-right"> {{((file.size|int) / 1024)|round(2)}} KB
+            </span>
+            {% elif (file.size|int) > 1048576 and (file.size|int) <= 1073741824%} <span class="float-right">
+              {{((file.size|int) / (1024 * 1024))|round(2)}} MB </span>
+              {% elif (file.size|int) > 1073741824 and (file.size|int) <= 1099511627776%} <span class="float-right">
+                {{((file.size|int) / (1024 * 1024 * 1024))|round(2)}} GB </span>
+                {% endif %}
+        </li>
+        {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</body>
+
+</html>

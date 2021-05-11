@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Ling Macker" />
+  <meta name="description" content="PanDownload网页版,百度网盘分享链接在线解析工具" />
+  <meta name="keywords" content="PanDownload,百度网盘,分享链接,下载,不限速" />
+  <link rel="icon" href="https://pandownload.com/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/css/bootstrap.min.css">
+  <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdn.staticfile.org/popper.js/1.12.5/umd/popper.min.js"></script>
+  <script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/js/bootstrap.min.js"></script>
+  <style>
+    body {
+      background-image: url("https://pandownload.com/img/baiduwp/bg.png");
+    }
+
+    .logo-img {
+      width: 1.1em;
+      position: relative;
+      top: -3px;
+    }
+  </style>
+  <meta name="referrer" content="never">
+  <title>下载链接使用方法</title>
+  <style>
+    .alert {
+      position: relative;
+      top: 5em;
+    }
+
+    .alert-heading {
+      height: 0.8em;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+    <div class="container">
+      <a class="navbar-brand" href="{{  index_url  }}">
+        <img src="https://pandownload.com/img/baiduwp/logo.png" class="img-fluid rounded logo-img mr-2"
+          alt="LOGO">PanDownload
+      </a>
+      <button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#collpase-bar">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="collpase-bar">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="{{  index_url  }}">主页</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-7 col-sm-8 col-11">
+
+        <div class="alert alert-primary" role="alert">
+          <h5 class="alert-heading">提示</h5>
+          <hr>
+          <p class="card-text">因百度限制，需修改浏览器UA后下载。<br>
+          <div class="page-inner">
+            <section class="normal" id="section-">
+              <h4>IDM（推荐）</h4>
+              <ol>
+                <li>选项 -> 下载 -> 手动添加任务时使用的用户代理（UA）-> 填入 <b>LogStatistic</b></li>
+                <li>右键复制下载链接，在 IDM 新建任务，粘贴链接即可下载。</li>
+              </ol>
+              <h4>ADM Pro（Android推荐）</h4>
+              <ol>
+                <li>设置 –&gt; 下载中 –&gt; 浏览器标识 –&gt; 自定义 浏览器标识</li>
+                <li>填入： LogStatistic</li>
+                <li>切换到浏览器（ADM留在后台），长按“下载链接”，选择复制链接地址</li>
+                <li>然后在ADM这里点击开始即可</li>
+              </ol>
+              <h4>Chrome浏览器</h4>
+              <ol>
+                <li>安装浏览器扩展程序 <a
+                    href="https://chrome.google.com/webstore/detail/user-agent-switcher-for-c/djflhoibgkdhkhhcedjiklpkjnoahfmg"
+                    target="_blank">User-Agent Switcher for Chrome</a></li>
+                <li>右键点击扩展图标 -> 选项</li>
+                <li>New User-agent name 填入 百度网盘分享下载</li>
+                <li>New User-Agent String 填入 LogStatistic</li>
+                <li>Group 填入 百度网盘</li>
+                <li>Append? 选择 Replace</li>
+                <li>Indicator Flag 填入 Log，点击 Add 保存</li>
+                <li>保存后点击扩展图标，出现"百度网盘"，进入并选择"百度网盘分享下载"。</li>
+              </ol>
+              <blockquote>
+                <p>Chrome应用商店打不开或者其他Chromium内核的浏览器，<a
+                    href="http://pandownload.com/static/user_agent_switcher_1_0_43_0.crx" target="_blank">请点此下载</a></p>
+                <p><a
+                    href="https://appcenter.browser.qq.com/search/detail?key=User-Agent%20Switcher%20for%20Chrome&amp;id=djflhoibgkdhkhhcedjiklpkjnoahfmg%20&amp;title=User-Agent%20Switcher%20for%20Chrome"
+                    target="_blank">QQ浏览器插件下载</a></p>
+              </blockquote>
+              <h4>Pure浏览器（Android）</h4>
+              <ol>
+                <li>设置 –&gt; 浏览设置 -&gt; 浏览器标识(UA)</li>
+                <li>添加自定义UA：LogStatistic</li>
+              </ol>
+              <h4>Alook浏览器（IOS）</h4>
+              <ol>
+                <li>设置 -&gt; 通用设置 -&gt; 浏览器标识 -&gt; 移动版浏览器标识 -&gt; 自定义 -><br> 填入 <b>LogStatistic</b></li>
+              </ol>
+            </section>
+          </div>
+          </p>
+        </div>
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+          aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Send to aria2</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="form-group">
+                  <p><label class="control-label">Json-RPC Url</label>
+                    <input name="url" id="url" class="form-control" placeholder="http://127.0.0.1:6800/jsonrpc">
+                  </p>
+                </div>
+                <div class="form-group">
+                  <p><label class="control-label">Token</label>
+                    <input name="token" id="token" class="form-control" placeholder="If none keep empty">
+                  </p>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="addUri()" data-dismiss="modal">Send</button>
+                <button type="button" class="btn btn-success" onclick="checkVer()">Check Version</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

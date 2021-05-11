@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Ling Macker" />
+  <meta name="description" content="PanDownload网页版,百度网盘分享链接在线解析工具" />
+  <meta name="keywords" content="PanDownload,百度网盘,分享链接,下载,不限速" />
+  <link rel="icon" href="https://pandownload.com/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/css/bootstrap.min.css">
+  <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdn.staticfile.org/popper.js/1.12.5/umd/popper.min.js"></script>
+  <script src="https://cdn.staticfile.org/limonte-sweetalert2/8.11.8/sweetalert2.all.min.js"></script>
+  <script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/js/bootstrap.min.js"></script>
+  <script>
+    function utoa(str) {
+      return window.btoa(unescape(encodeURIComponent(str)));
+    }
+    // base64 encoded ascii to ucs-2 string
+    function atou(str) {
+      return decodeURIComponent(escape(window.atob(str)));
+    }
+    function getCookie(name) {
+      var nameEQ = name + "=";
+      var ca = document.cookie.split(';');
+      for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+      }
+      return null;
+    }
+
+    $(function () {
+      if (getCookie('aria2url') != null) {
+        $('#url').attr('value', atou(getCookie('aria2url')))
+        if (getCookie('aria2token') != null) {
+          $('#token').attr('value', atou(getCookie('aria2token')))
+        }
+      }
+    })
+    async function checkVer() {
+      let token = $('#token').val()
+      let aria2url = $('#url').val()
+      if (token != "") {
+        postVer = JSON.stringify({
+          jsonrpc: '2.0',
+          method: 'aria2.getVersion',
+          id: 'baiduwp',
+          params: ['token:' + token]
+        })
+      } else {
+        postVer = JSON.stringify({
+          jsonrpc: '2.0',
+          method: 'aria2.getVersion',
+          id: 'baiduwp',
+          params: []
+        })
+      }
+      const getVer = await fetch(aria2url, {
+        body: postVer,
+        method: 'POST',
+        headers: { 'content-type': 'text/json' }
+      }).catch((error) => {
+        Swal.fire('Sorry~', 'Connect to aria2 failed', 'error')
+      });
+      if (await getVer != null)
+        if (await getVer.status === 200) {
+          Swal.fire('detected aria2 version ' + JSON.parse(await getVer.text()).result.version, 'Please click send', 'success')
+        }
+        else {
+          Swal.fire('Sorry~', 'Connect to aria2 failed', 'error')
+        }
+    }
+    async function addUri() {
+      let token = $('#token').val()
+      let aria2url = $('#url').val()
+      let filename = $('#filename').text()
+      // Thanks to acgotaku/BaiduExporter
+      const httpurl = $('#http')[0].href
+      const httpsurl = $('#https')[0].href
+      const headerOption = ['User-Agent: LogStatistic']
+      let post
+      let postVer
+      if (token != "") {
+        postVer = JSON.stringify({
+          jsonrpc: '2.0',
+          method: 'aria2.getVersion',
+          id: 'baiduwp',
+          params: ['token:' + token]
+        })
+        post = JSON.stringify({ jsonrpc: '2.0', id: 'baiduwp', method: 'aria2.addUri', params: ["token:" + token, [httpurl, httpsurl], { header: headerOption, out: filename }] })
+      }
+      else {
+        postVer = JSON.stringify({
+          jsonrpc: '2.0',
+          method: 'aria2.getVersion',
+          id: 'baiduwp',
+          params: []
+        })
+        post = JSON.stringify({ jsonrpc: '2.0', id: 'baiduwp', method: 'aria2.addUri', params: [[httpurl, httpsurl], { header: headerOption, out: filename }] })
+      }
+
+
+      const getVer = await fetch(aria2url, {
+        body: postVer,
+        method: 'POST',
+        headers: { 'content-type': 'text/json' }
+      }).catch((error) => {
+        Swal.fire('Sorry~', 'Connect to aria2 failed', 'error')
+      });
+      if (await getVer != null)
+        if (await getVer.status === 200) {
+          Swal.fire('detected aria2 version ' + JSON.parse(await getVer.text()).result.version, 'sending request...', 'success')
+          const sendLink = await fetch(aria2url, { body: post, method: 'POST', headers: { 'content-type': 'text/json' } }).catch((e) => { Swal.fire('Sorry~', e, 'error') })
+          if (await sendLink != null)
+            if (await sendLink.status === 200) {
+              Swal.fire('Sent successfully', 'Good Luck', 'success')
+              document.cookie = 'aria2url=' + utoa(aria2url) // add aria2 config to cookie
+              if (token != "" && token != null) {
+                document.cookie = 'aria2token=' + utoa(token)
+              }
+            }
+            else {
+              Swal.fire('Sorry~', 'Connect to aria2 failed', 'error')
+            }
+        } else {
+          Swal.fire('Sorry~', 'Connect to aria2 failed', 'error')
+        }
+    }
+  </script>
+  <style>
+    body {
+      background-image: url("https://pandownload.com/img/baiduwp/bg.png");
+    }
+
+    .logo-img {
+      width: 1.1em;
+      position: relative;
+      top: -3px;
+    }
+  </style>
+  <meta name="referrer" content="never">
+  <title>提示</title>
+  <style>
+    .alert {
+      position: relative;
+      top: 5em;
+    }
+
+    .alert-heading {
+      height: 0.8em;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+    <div class="container">
+      <a class="navbar-brand" href="{{  index_url  }}">
+        <img src="https://pandownload.com/img/baiduwp/logo.png" class="img-fluid rounded logo-img mr-2"
+          alt="LOGO">PanDownload
+      </a>
+      <button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#collpase-bar">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="collpase-bar">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="{{  index_url  }}">主页</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-7 col-sm-8 col-11">
+        {% if download %}
+        <div class="alert alert-primary" role="alert">
+          <h5 class="alert-heading">获取下载链接成功</h5>
+          <hr>
+          文件名：<b id="filename">{{filename}}</b>
+          <a id="downloadTarget" style="display: none"></a>
+          <p class="card-text"><a class="btn btn-primary" role="button" id="http" href="http://{{ realLink }}"
+              target=_blank>下载链接(http)</a>
+            <a class="btn btn-primary" role="button" id="https" href="https://{{ realLink }}"
+              target=_blank>下载链接(https)</a>
+            <a class="btn btn-primary" role="button" href=javascript:void(0) data-toggle="modal"
+              data-target="#exampleModal">推送到Aria2</a>
+            <br><br>
+            <a href="./help">下载链接使用方法（必读）</a>
+          </p>
+        </div>
+        {% else %}
+        <div class="alert alert-danger" role="alert">
+          <h5 class="alert-heading">获取下载链接失败</h5>
+          <hr>
+          <p class="card-text">未知错误，请重试</p>
+        </div>
+        {% endif %}
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+          aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Send to aria2</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="form-group">
+                  <p><label class="control-label">Json-RPC Url</label>
+                    <input name="url" id="url" class="form-control" placeholder="http://127.0.0.1:6800/jsonrpc">
+                  </p>
+                </div>
+                <div class="form-group">
+                  <p><label class="control-label">Token</label>
+                    <input name="token" id="token" class="form-control" placeholder="If none keep empty">
+                  </p>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="addUri()" data-dismiss="modal">Send</button>
+                <button type="button" class="btn btn-success" onclick="checkVer()">Check Version</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
